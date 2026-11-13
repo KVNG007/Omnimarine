@@ -1,5 +1,6 @@
 import { Link, NavLink, Route, Routes } from 'react-router-dom'
-import { Anchor, ArrowDownRight, BarChart3, BookOpenCheck, ChevronRight, HeartPulse, RotateCcw, Shield, Ship, SlidersHorizontal, Sparkles } from 'lucide-react'
+import { useState } from 'react'
+import { Anchor, ArrowDownRight, BarChart3, BookOpenCheck, ChevronRight, HeartPulse, Play, RotateCcw, Shield, Ship, SlidersHorizontal, Sparkles } from 'lucide-react'
 import { useMaritimeData } from '@/data/MaritimeDataContext'
 import { formatUsd } from '@/lib/format'
 import TrafficView from '@/views/TrafficView'
@@ -8,6 +9,7 @@ import LedgerView from '@/views/LedgerView'
 import WellbeingView from '@/views/WellbeingView'
 import NimasaView from '@/views/NimasaView'
 import { getCrewAlertCount, getPendingDocumentCount, terminals } from '@/data/mockMaritimeData'
+import PitchWalkthrough from '@/components/PitchWalkthrough'
 
 const navigation = [
   { to: '/traffic', label: 'Live Traffic & JIT Arrival', short: 'Live traffic', icon: Ship },
@@ -19,6 +21,7 @@ const navigation = [
 
 function AppShell() {
   const { state, dispatch } = useMaritimeData()
+  const [pitchStep, setPitchStep] = useState<number | null>(null)
   const pendingDocs = getPendingDocumentCount(state)
   const crewAlerts = getCrewAlertCount(state)
 
@@ -68,7 +71,8 @@ function AppShell() {
             <div className="flex items-center gap-2 text-[10px] text-slate-500"><span className="hidden sm:inline">NIGERIA</span><ChevronRight className="hidden size-3 sm:inline" /><span className="text-slate-300">Lagos operations</span><span className="mx-1 hidden h-3 w-px bg-slate-700 sm:block" /><span className="flex items-center gap-1.5"><span className="size-1.5 animate-pulse rounded-full bg-emerald-400" /> Demo data live</span></div>
             <div className="flex items-center gap-3">
               <div className="hidden items-center gap-2 text-[10px] text-slate-500 xl:flex"><span>{state.lastUpdated}</span><span className="rounded border border-slate-700 px-1.5 py-0.5 text-[9px] text-slate-400">WAT</span></div>
-              <button onClick={() => dispatch({ type: 'toggle-guided-demo' })} aria-pressed={state.guidedDemo} className={`flex items-center gap-2 rounded-md border px-2.5 py-1.5 text-[9px] font-medium transition-colors sm:text-[10px] ${state.guidedDemo ? 'border-cyan-400/35 bg-cyan-400/10 text-cyan-200' : 'border-slate-700 bg-slate-900/70 text-slate-300 hover:border-cyan-400/30'}`}><Sparkles className="size-3.5" /><span>Guided Pitch Demo</span><span className={`ml-0.5 h-3.5 w-6 rounded-full p-0.5 ${state.guidedDemo ? 'bg-cyan-500' : 'bg-slate-700'}`}><span className={`block size-2.5 rounded-full bg-white transition-transform ${state.guidedDemo ? 'translate-x-2.5' : ''}`} /></span></button>
+              <button onClick={() => setPitchStep(0)} className="flex items-center gap-1.5 rounded-md bg-cyan-400 px-2.5 py-1.5 text-[9px] font-semibold text-[#062033] transition-colors hover:bg-cyan-300 sm:text-[10px]"><Play className="size-3" /><span>Start 36-Hour Voyage Story</span></button>
+              <button onClick={() => dispatch({ type: 'toggle-guided-demo' })} aria-pressed={state.guidedDemo} className={`hidden items-center gap-2 rounded-md border px-2.5 py-1.5 text-[9px] font-medium transition-colors sm:flex sm:text-[10px] ${state.guidedDemo ? 'border-cyan-400/35 bg-cyan-400/10 text-cyan-200' : 'border-slate-700 bg-slate-900/70 text-slate-300 hover:border-cyan-400/30'}`}><Sparkles className="size-3.5" /><span>Guided Pitch Demo</span><span className={`ml-0.5 h-3.5 w-6 rounded-full p-0.5 ${state.guidedDemo ? 'bg-cyan-500' : 'bg-slate-700'}`}><span className={`block size-2.5 rounded-full bg-white transition-transform ${state.guidedDemo ? 'translate-x-2.5' : ''}`} /></span></button>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-2 px-4 pb-3 sm:grid-cols-4 sm:px-6 xl:px-8">
@@ -96,6 +100,7 @@ function AppShell() {
       </div>
 
       {state.guidedDemo && <div className="fixed bottom-4 right-4 z-30 flex max-w-sm items-start gap-3 rounded-lg border border-cyan-400/30 bg-[#10243e] p-4 shadow-2xl shadow-black/30"><Sparkles className="mt-0.5 size-4 shrink-0 text-cyan-300" /><div><p className="text-xs font-semibold text-white">Guided pitch demo is on</p><p className="mt-1 text-[10px] leading-4 text-slate-400">Explore the five views. Apply a JIT plan or clear a document to see shared KPIs and the economic ledger update.</p><Link to="/traffic" className="mt-2 inline-flex items-center gap-1 text-[10px] text-cyan-300 hover:text-cyan-200">Start with live traffic <ArrowDownRight className="size-3" /></Link></div><button onClick={() => dispatch({ type: 'toggle-guided-demo' })} className="text-slate-500 hover:text-slate-200" aria-label="Dismiss demo guide">×</button></div>}
+      {pitchStep !== null && <PitchWalkthrough stepIndex={pitchStep} onStep={setPitchStep} onClose={() => setPitchStep(null)} />}
     </div>
   )
 }

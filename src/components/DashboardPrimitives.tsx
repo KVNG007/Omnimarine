@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import type { ComponentProps, ReactNode } from 'react'
 import { ArrowDownRight, ArrowUpRight, Minus } from 'lucide-react'
 import type { RiskLevel } from '@/data/mockMaritimeData'
 
@@ -15,8 +15,8 @@ export function PageHeading({ eyebrow, title, description, action }: { eyebrow: 
   )
 }
 
-export function Panel({ children, className = '' }: { children: ReactNode; className?: string }) {
-  return <section className={`rounded-lg border border-slate-700/80 bg-slate-900/65 ${className}`}>{children}</section>
+export function Panel({ children, className = '', ...props }: ComponentProps<'section'>) {
+  return <section {...props} className={`rounded-lg border border-slate-700/80 bg-slate-900/65 ${className}`}>{children}</section>
 }
 
 export function PanelTitle({ title, detail, action }: { title: string; detail?: string; action?: ReactNode }) {
